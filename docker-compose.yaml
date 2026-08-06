@@ -15,7 +15,7 @@ services:
       retries: 10
 
   migrate:
-    image: ghcr.io/ryansuhartanto/koda-b8-backendjs/tools:${TAG:-latest}
+    image: ghcr.io/ryansuhartanto/koda-b8-backendjs/tools:${BACKEND_TAG:-latest}
     build:
       context: backend
       target: tools
@@ -30,7 +30,7 @@ services:
     restart: "no"
 
   api-go:
-    image: ghcr.io/ryansuhartanto/koda-b8-backendjs/go:${TAG:-latest}
+    image: ghcr.io/ryansuhartanto/koda-b8-backendjs/go:${BACKEND_TAG:-latest}
     build:
       context: backend
       target: go
@@ -57,7 +57,7 @@ services:
       retries: 10
 
   api-js:
-    image: ghcr.io/ryansuhartanto/koda-b8-backendjs/js:${TAG:-latest}
+    image: ghcr.io/ryansuhartanto/koda-b8-backendjs/js:${BACKEND_TAG:-latest}
     build:
       context: backend
       target: js
@@ -98,6 +98,14 @@ services:
     ports:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
 
+  web:
+    image: ghcr.io/ryansuhartanto/koda-b8-react:${FRONTEND_TAG:-latest}
+    build: frontend
+    depends_on:
+      api:
+        condition: service_started
+    ports:
+      - "${FRONTEND_PORT}:80"
 
 volumes:
   db:
