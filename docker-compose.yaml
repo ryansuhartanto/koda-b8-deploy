@@ -17,7 +17,7 @@ services:
   migrate:
     image: ghcr.io/ryansuhartanto/koda-b8-backendjs/tools:${TAG:-latest}
     build:
-      context: .
+      context: backend
       target: tools
     environment:
       PGHOST: db
@@ -32,7 +32,7 @@ services:
   go:
     image: ghcr.io/ryansuhartanto/koda-b8-backendjs/go:${TAG:-latest}
     build:
-      context: .
+      context: backend
       target: go
     environment:
       PGHOST: db
@@ -51,7 +51,7 @@ services:
   js:
     image: ghcr.io/ryansuhartanto/koda-b8-backendjs/js:${TAG:-latest}
     build:
-      context: .
+      context: backend
       target: js
     environment:
       PGHOST: db
