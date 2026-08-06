@@ -29,7 +29,7 @@ services:
         condition: service_healthy
     restart: "no"
 
-  go:
+  api-go:
     image: ghcr.io/ryansuhartanto/koda-b8-backendjs/go:${TAG:-latest}
     build:
       context: backend
@@ -45,10 +45,18 @@ services:
     depends_on:
       migrate:
         condition: service_completed_successfully
-    ports:
-      - "${GO_PORT}:${GO_PORT}"
+    expose:
+      - "${GO_PORT}"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q -O /dev/null http://localhost:${GO_PORT}/healthz",
+        ]
+      interval: 5s
+      retries: 10
 
-  js:
+  api-js:
     image: ghcr.io/ryansuhartanto/koda-b8-backendjs/js:${TAG:-latest}
     build:
       context: backend
@@ -64,8 +72,32 @@ services:
     depends_on:
       migrate:
         condition: service_completed_successfully
+    expose:
+      - "${JS_PORT}"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q -O /dev/null http://localhost:${JS_PORT}/healthz",
+        ]
+      interval: 5s
+      retries: 10
+
+  api:
+    image: load-balancer
+    build: .
+    environment:
+      GO_PORT: "${GO_PORT}"
+      JS_PORT: "${JS_PORT}"
+      BACKEND_PORT: "${BACKEND_PORT}"
+    depends_on:
+      api-go:
+        condition: service_healthy
+      api-js:
+        condition: service_healthy
     ports:
-      - "${JS_PORT}:${JS_PORT}"
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+
 
 volumes:
   db:
