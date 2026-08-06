@@ -15,5 +15,7 @@ jobs:
           username: github
 
           script: |
+            cd ~/deploy
+            git pull
             docker compose pull
             docker compose up -d
