@@ -101,6 +101,8 @@ services:
   web:
     image: ghcr.io/ryansuhartanto/koda-b8-react:${FRONTEND_TAG:-latest}
     build: frontend
+    environment:
+      VITE_BACKEND_URL: "http://localhost:${BACKEND_PORT}"
     depends_on:
       api:
         condition: service_started
