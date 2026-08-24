@@ -5,7 +5,7 @@ COPY --from=oven/bun:1-alpine /usr/local/bin/bun /usr/local/bin/
 WORKDIR /var/app/
 
 COPY --parents backend/./package.json backend/./bun.lock ./
-COPY --parents backend/./apps/js/package.json backend/./db/seed/package.json backend/./parity/package.json ./
+COPY --parents backend/./apps/js/package.json backend/./parity/package.json ./
 RUN bun ci --ignore-scripts
 
 COPY --parents backend/./tsconfig.json backend/./vite.config.ts ./
@@ -20,29 +20,16 @@ RUN go mod download
 COPY --parents backend/./apps/go/ ./
 RUN go -C apps/go build -o /usr/local/bin/api .
 
-FROM golang:1.26-alpine AS build-migrate
-
-RUN go install -tags pgx5 github.com/golang-migrate/migrate/v4/cmd/migrate@latest
-
 FROM base AS build-js
 
 COPY --parents backend/./apps/js/ ./
 RUN bun run --cwd apps/js build
 
-FROM base AS build-seed
+FROM base AS tools
 
-COPY --parents backend/./db/seed/ ./
-RUN bun run --cwd db/seed pack
+COPY --parents backend/./sqlumz.config.ts backend/./db/ ./
 
-FROM alpine:latest AS tools
-
-RUN apk add --no-cache libstdc++
-
-COPY --from=build-migrate /go/bin/migrate /usr/local/bin/
-COPY --from=build-seed /var/app/db/seed/build/seed /usr/local/bin/
-COPY backend/db/migrations/ /migrations/
-
-CMD [ "sh", "-c", "migrate -database pgx5://: -path /migrations up && seed" ]
+CMD [ "sh", "-c", "bun sqlumz migration run && bun sqlumz seed run" ]
 
 FROM alpine:latest AS go
 
