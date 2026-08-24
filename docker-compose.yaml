@@ -17,7 +17,8 @@ services:
   migrate:
     image: ghcr.io/ryansuhartanto/koda-b8-backendjs/tools:${BACKEND_TAG:-latest}
     build:
-      context: backend
+      context: .
+      dockerfile: build/backend/Dockerfile
       target: tools
     environment:
       PGHOST: db
@@ -32,7 +33,8 @@ services:
   api-go:
     image: ghcr.io/ryansuhartanto/koda-b8-backendjs/go:${BACKEND_TAG:-latest}
     build:
-      context: backend
+      context: .
+      dockerfile: build/backend/Dockerfile
       target: go
     environment:
       PGHOST: db
@@ -59,7 +61,8 @@ services:
   api-js:
     image: ghcr.io/ryansuhartanto/koda-b8-backendjs/js:${BACKEND_TAG:-latest}
     build:
-      context: backend
+      context: .
+      dockerfile: build/backend/Dockerfile
       target: js
     environment:
       PGHOST: db
@@ -100,7 +103,9 @@ services:
 
   web:
     image: ghcr.io/ryansuhartanto/koda-b8-react:${FRONTEND_TAG:-latest}
-    build: frontend
+    build:
+      context: .
+      dockerfile: build/frontend/Dockerfile
     environment:
       VITE_BACKEND_URL: "http://localhost:${BACKEND_PORT}"
     depends_on:
