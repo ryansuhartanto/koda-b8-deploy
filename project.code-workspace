@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": ".",
+			"name": "project",
+		},
+		{
+			"path": "backend",
+		},
+		{
+			"path": "frontend",
+		},
+	],
+	"settings": {
+		"files.exclude": {
+			"backend": true,
+			"frontend": true,
+		},
+
+		"oxc.enable": true,
+		"js/ts.tsdk.path": "node_modules/typescript/lib",
+	},
+}
