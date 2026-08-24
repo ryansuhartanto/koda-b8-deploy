@@ -1,6 +1,4 @@
-FROM node:26-alpine AS base
-
-COPY --from=oven/bun:1-alpine /usr/local/bin/bun /usr/local/bin/
+FROM oven/bun:1-alpine AS base
 
 WORKDIR /var/app/
 
